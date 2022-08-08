@@ -3,11 +3,21 @@ kind: Ingress
 metadata:
   name: dashboard-ingress
   namespace: kubernetes-dashboard
+  annotations:
+    haproxy.org/server-ssl: "true"
 spec:
+  tls:
+    - hosts:
+        - "dashboard-my.com"
+      secretName: kubernetes-dashboard-secret
   rules:
-  - host: dashboard.com
-    http:
-      paths:
-      - backend:
-          serviceName: kubernetes-dashboard
-          servicePort: 80
+    - host: dashboard-my.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kubernetes-dashboard
+                port:
+                  number: 443
